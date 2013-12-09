@@ -1,5 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Saas.Pushover where
+module Saas.Pushover (
+    -- *Data types
+    PushMessage(..),
+    PushResponse(..),
+    ReceiptResponse(..),
+    -- *Default constructor
+    defaultMessage,
+    -- *IO functions
+    sendPushMessage,
+    checkReceipt
+    ) where
 
 import Control.Applicative
 import Control.Exception
@@ -44,7 +54,7 @@ instance FromJSON PushResponse where
                                     <*> o .:? "errors"
     parseJSON _ = fail "Unable to parse response from Pushover.net"
     
--- | The reponse when you inquire about a receipt for a priority 2 message.
+-- | The reponse when you inquire about a receipt for a priority 2 message. See the pushover API documentation for what each field means.
 data ReceiptResponse = RR   { receiptstatus     :: Int --augh ugly, but status is already claimed by PR
                             , acknowledged      :: Int
                             , acknowledgedAt    :: Int 
@@ -67,7 +77,7 @@ instance FromJSON ReceiptResponse where
     parseJSON _ = fail "Unable to parse response from Pushover.net"
 
 
--- | A default PushMessage (all empty fields except token, user and message will be removed later in the POST request,
+-- | A default PushMessage (all empty fields except @token@, @user@ and @message@ will be removed later in the POST request,
 -- but the fields have to be there to overwrite them later (if you want)).
 defaultMessage :: PushMessage
 defaultMessage = PM { token     = ""  --required
@@ -85,7 +95,7 @@ defaultMessage = PM { token     = ""  --required
                     , retry     = 0  --callback is usually not needed
                     }
 
--- Turn the PushMessage data structure into the fancy structure that
+-- Turn the PushMessage data structure into the fancy structure that the Pushover API actually requires
 messageToBytestrings :: PushMessage -> [(BS.ByteString, BS.ByteString)]
 messageToBytestrings pm =   filter (\(x,y) -> y /= "") -- don't include any empty fields
                             [ ("token", token pm)
