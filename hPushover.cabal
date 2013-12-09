@@ -3,7 +3,7 @@
 
 name:                hPushover
 version:             0.1
-synopsis:            Pushover.com API functions
+synopsis:            Pushover.net API functions
 -- description:         
 homepage:            tot
 license:             BSD3
