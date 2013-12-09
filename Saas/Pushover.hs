@@ -1,9 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
+
+-- |Small library that provides functions to send push messages to Android and Apple devices which have the Pushover app installed.
 module Saas.Pushover (
     -- *Data types
     PushMessage(..),
     PushResponse(..),
     ReceiptResponse(..),
+    Apptoken,
+    Receipt,
     -- *Default constructor
     defaultMessage,
     -- *IO functions
@@ -54,7 +58,7 @@ instance FromJSON PushResponse where
                                     <*> o .:? "errors"
     parseJSON _ = fail "Unable to parse response from Pushover.net"
     
--- | The reponse when you inquire about a receipt for a priority 2 message. See the pushover API documentation for what each field means.
+-- | The reponse you get when you inquire about a receipt for a priority 2 message. See the pushover API documentation for what each field means.
 data ReceiptResponse = RR   { receiptstatus     :: Int --augh ugly, but status is already claimed by PR
                             , acknowledged      :: Int
                             , acknowledgedAt    :: Int 
