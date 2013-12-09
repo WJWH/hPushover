@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- |Small library that provides functions to send push messages to Android and Apple devices which have the Pushover app installed.
+-- |Small library that provides functions to send push messages to Android and Apple devices which have the Pushover app installed. Please note that the
+-- IO function make use of the network stack and should be wrapped with @withSocketsDo@.
 module Saas.Pushover (
     -- *Data types
     PushMessage(..),
