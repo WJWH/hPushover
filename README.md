@@ -5,7 +5,7 @@ Haskell bindings to the Pushover.net service.
 
 =========
 
-Using this library you can send push messages to any Android or Apple device that has the Pushover app installed.
+Use this library to send push messages to any Android or Apple device that has the Pushover app installed. Also see the haddock generated documentation in the /dist/doc folder.
 
 Example:
 ```
