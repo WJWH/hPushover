@@ -18,5 +18,5 @@ main = withSocketsDo $ sendPushMessage myMessage
 ```
 
 =========
-
+To install, use cabal update && cabal install hpushover. 
 Please do not hesitate to contact me with questions, feature request or issue reports!
