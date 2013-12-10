@@ -11,6 +11,7 @@ Example:
 ```
 {-# LANGUAGE OverloadedStrings #-}
 import Saas.Pushover
+import Network
 
 myMessage = defaultMessage { token = "my_App_token", user = "my_user_key", message = "Hello world!"}
 
