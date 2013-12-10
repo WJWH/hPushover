@@ -12,7 +12,7 @@ Example:
 {-# LANGUAGE OverloadedStrings #-}
 import Saas.Pushover
 
-myMessage = defaultMessage { token = "my_App_token", user = my_user_key", message = "Hello world!"}
+myMessage = defaultMessage { token = "my_App_token", user = "my_user_key", message = "Hello world!"}
 
 main = withSocketsDo $ sendPushMessage myMessage 
 ```
