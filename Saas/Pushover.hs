@@ -19,27 +19,29 @@ module Saas.Pushover (
 import Control.Applicative
 import Control.Exception
 import Data.Aeson
-import qualified Data.ByteString.Char8 as BS
+import qualified Data.ByteString as BS
+import Data.Text (Text, pack, unpack)
+import Data.Text.Encoding (encodeUtf8)
 import Data.Maybe
 import Debug.Trace
 import Network
 import Network.HTTP.Conduit
 
-type Apptoken = BS.ByteString
-type Receipt = BS.ByteString
+type Apptoken = Text
+type Receipt = Text
 
 -- | The PushMessage data structure. To construct one of these, you should alter the message under *defaultMessage* using record syntax.
-data PushMessage = PM   { token     :: BS.ByteString
-                        , user      :: BS.ByteString
-                        , message   :: BS.ByteString
-                        , device    :: BS.ByteString
-                        , title     :: BS.ByteString
-                        , url       :: BS.ByteString
-                        , urlTitle  :: BS.ByteString
+data PushMessage = PM   { token     :: Text
+                        , user      :: Text
+                        , message   :: Text
+                        , device    :: Text
+                        , title     :: Text
+                        , url       :: Text
+                        , urlTitle  :: Text
                         , priority  :: Int
-                        , timestamp :: BS.ByteString
-                        , sound     :: BS.ByteString
-                        , callback  :: BS.ByteString
+                        , timestamp :: Text
+                        , sound     :: Text
+                        , callback  :: Text
                         , expire    :: Int
                         , retry     :: Int
                         } deriving (Show,Eq)
@@ -47,9 +49,9 @@ data PushMessage = PM   { token     :: BS.ByteString
 -- | When you send a PushMessage, the server replies with at least a status code and a request number. 
 -- See the pushover API documentation for what each field means.
 data PushResponse = PR  { status    :: Int
-                        , request   :: BS.ByteString
-                        , receipt   :: Maybe BS.ByteString
-                        , errors    :: Maybe [BS.ByteString]
+                        , request   :: Text
+                        , receipt   :: Maybe Text
+                        , errors    :: Maybe [Text]
                         } deriving (Show,Eq)
 
 instance FromJSON PushResponse where
@@ -102,7 +104,7 @@ defaultMessage = PM { token     = ""  --required
 
 -- Turn the PushMessage data structure into the fancy structure that the Pushover API actually requires
 messageToBytestrings :: PushMessage -> [(BS.ByteString, BS.ByteString)]
-messageToBytestrings pm =   filter (\(x,y) -> y /= "") -- don't include any empty fields
+messageToBytestrings pm = map (\(k, v) -> (encodeUtf8 k, encodeUtf8 v)) $ filter (\(x,y) -> y /= "") -- don't include any empty fields
                             [ ("token", token pm)
                             , ("user", user pm)
                             , ("message", message pm)
@@ -118,10 +120,10 @@ messageToBytestrings pm =   filter (\(x,y) -> y /= "") -- don't include any empt
                             ]
 
 --small utility function to make ints behave properly with messageToBytestrings
-packIfNonzero :: Int -> BS.ByteString
+packIfNonzero :: Int -> Text
 packIfNonzero i
     | i == 0    = ""
-    | otherwise = BS.pack . show $ i
+    | otherwise = pack . show $ i
 
 -- | Sends a push message to the Pushover servers.
 sendPushMessage :: PushMessage -> IO PushResponse
@@ -134,6 +136,6 @@ sendPushMessage pm = do
 -- | Inquire about a receipt. 
 checkReceipt :: Apptoken -> Receipt -> IO ReceiptResponse
 checkReceipt at rc = do --because it's a very basic GET request, we can just use simpleHTTP here
-    resp <- simpleHttp $ "https://api.pushover.net/1/receipts/" ++ (BS.unpack rc) ++ ".json?token=" ++ (BS.unpack at)
+    resp <- simpleHttp $ "https://api.pushover.net/1/receipts/" ++ (unpack rc) ++ ".json?token=" ++ (unpack at)
     return . fromJust . decode $ resp
     
