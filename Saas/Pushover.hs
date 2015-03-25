@@ -44,6 +44,7 @@ data PushMessage = PM   { token     :: Text
                         , callback  :: Text
                         , expire    :: Int
                         , retry     :: Int
+                        , html      :: Int
                         } deriving (Show,Eq)
 
 -- | When you send a PushMessage, the server replies with at least a status code and a request number. 
@@ -100,6 +101,7 @@ defaultMessage = PM { token     = ""  --required
                     , callback  = ""  --callback is usually not needed
                     , expire    = 0  --callback is usually not needed
                     , retry     = 0  --callback is usually not needed
+                    , html      = 0  --default is plain text
                     }
 
 -- Turn the PushMessage data structure into the fancy structure that the Pushover API actually requires
@@ -117,6 +119,7 @@ messageToBytestrings pm = map (\(k, v) -> (encodeUtf8 k, encodeUtf8 v)) $ filter
                             , ("callback", callback pm)
                             , ("expire", packIfNonzero $ expire pm)
                             , ("retry", packIfNonzero $ retry pm)
+                            , ("html", packIfNonzero $ html pm)
                             ]
 
 --small utility function to make ints behave properly with messageToBytestrings
